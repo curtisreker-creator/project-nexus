@@ -79,6 +79,8 @@ flowchart LR
     RIL -- Generates Findings --> DRM
     AIE -- Provides Analytics --> DRM
     RIL -- Produces Models --> MPE
+
+```
 The Agent Architecture
 The core of the project is the NEXUS agent. Its "mind" is a neural network that processes information from multiple sources simultaneously (multi-modal fusion):
 
@@ -104,28 +106,28 @@ Step-by-Step Guide
 1. Clone the Repository
 Open your terminal, navigate to your desired directory, and clone the repository.
 
-Bash
-
+```Bash
 git clone [https://github.com/curtisreker-creator/project-nexus.git](https://github.com/curtisreker-creator/project-nexus.git)
 cd project-nexus
+```
 2. Set Up the Conda Environment
 Use the provided environment file to create a new, isolated Conda environment.
 
-Bash
-
+```Bash
 conda env create -f environment.yml
+```
 3. Activate the Environment
 You must activate the environment every time you open a new terminal to work on the project.
 
-Bash
-
-conda activate project-nexus
+```Bash
+conda activate project-nexus]
+```
 4. Launch a Training Run
 You are now ready to start! Launch the training script from the root directory of the project:
 
-Bash
-
+```Bash
 python scripts/train.py --config configs/default.yml
+```
 5. Monitor the Output
 You should see output in your terminal indicating that the training process has begun. Congratulations!
 
