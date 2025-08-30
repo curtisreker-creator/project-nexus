@@ -1,0 +1,83 @@
+# File: requirements.txt
+# Project NEXUS - Analytics & Insights Engine Requirements
+# For pip-based installations (non-conda environments)
+
+# Core Dependencies
+torch>=1.12.0
+torchvision>=0.13.0
+torchaudio>=0.12.0
+numpy>=1.21.0
+scipy>=1.7.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+pillow>=8.3.0
+
+# Data Analysis & Analytics (AIE Core)
+pandas>=1.4.0
+scikit-learn>=1.1.0
+plotly>=5.0.0
+dash>=2.0.0
+bokeh>=2.4.0
+statsmodels>=0.13.0
+
+# Performance & Monitoring
+psutil>=5.8.0
+memory-profiler>=0.60.0
+line-profiler>=3.5.0
+
+# Async & Real-time
+aiofiles>=0.8.0
+asyncio-mqtt>=0.11.0
+
+# RL & Environment
+gymnasium>=0.26.0
+stable-baselines3>=1.7.0
+
+# Experiment Tracking
+wandb>=0.13.0
+tensorboard>=2.8.0
+mlflow>=1.28.0
+
+# Distributed Computing
+ray[default]>=2.0.0
+dask[complete]>=2022.8.0
+
+# Web & API Services
+fastapi>=0.85.0
+uvicorn>=0.18.0
+websockets>=10.0
+streamlit>=1.12.0
+
+# Time Series & Forecasting
+prophet>=1.1.0
+tslearn>=0.5.2
+
+# Graph Analysis
+networkx>=2.8.0
+python-igraph>=0.10.0
+python-louvain>=0.16
+
+# Data Storage & I/O
+h5py>=3.6.0
+pyarrow>=7.0.0
+
+# Competitive Intelligence
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+feedparser>=6.0.0
+arxiv>=1.4.0
+
+# Development & Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-asyncio>=0.20.0
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.950
+pre-commit>=2.17.0
+
+# Configuration & Utilities
+pyyaml>=6.0
+tqdm>=4.64.0
+click>=8.0.0
+python-dotenv>=0.19.0
