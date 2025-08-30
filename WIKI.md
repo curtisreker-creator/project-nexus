@@ -47,32 +47,31 @@ This section provides a high-level overview of the technical design of Project N
 
 Project NEXUS is organized into eight distinct but interconnected subsystems to manage complexity and focus development. The graph below shows how these subsystems interact.
 
-```mermaid
-graph TD
-    subgraph "Foundational Subsystems"
-        DPE["DPE<br/>Developer Platform & Ecosystem"]
+---
+config:
+  theme: neo-dark
+---
+flowchart LR
+ subgraph subGraph0["Foundational Subsystems"]
+        DPE["DPE<br>Developer Platform &amp; Ecosystem"]
         SysEng["Systems Engineering"]
         Arch["Architecture Design"]
-    end
-
-    subgraph "Core Research Engine"
-        POE["POE<br/>Performance & Optimization"]
-        RIL["RIL<br/>Research & Innovation Lab"]
-        AIE["AIE<br/>Analytics & Insights Engine"]
-    end
-
-    subgraph "Output & Deployment Subsystems"
-        DRM["DRM<br/>Documentation & Research Mgmt"]
-        MPE["MPE<br/>MLOps & Production Engineering"]
-    end
-
-    %% Define Dependencies
-    DPE --> POE; DPE --> RIL; DPE --> AIE; DPE --> MPE;
-    SysEng --> POE;
-    Arch --> RIL;
-    POE -- Enables Scale --> RIL;
-    RIL -- Runs Experiments --> AIE;
-    AIE -- Provides Insights --> RIL;
-    RIL -- Generates Findings --> DRM;
-    AIE -- Provides Analytics --> DRM;
-    RIL -- Produces Models --> MPE;
+  end
+ subgraph subGraph1["Core Research Engine"]
+        POE["POE<br>Performance &amp; Optimization"]
+        RIL["RIL<br>Research &amp; Innovation Lab"]
+        AIE["AIE<br>Analytics &amp; Insights Engine"]
+  end
+ subgraph subGraph2["Output & Deployment Subsystems"]
+        DRM["DRM<br>Documentation &amp; Research Mgmt"]
+        MPE["MPE<br>MLOps &amp; Production Engineering"]
+  end
+    DPE --> POE & RIL & AIE & MPE
+    SysEng --> POE
+    Arch --> RIL
+    POE -- Enables Scale --> RIL
+    RIL -- Runs Experiments --> AIE
+    AIE -- Provides Insights --> RIL
+    RIL -- Generates Findings --> DRM
+    AIE -- Provides Analytics --> DRM
+    RIL -- Produces Models --> MPE
