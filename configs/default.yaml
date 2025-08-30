@@ -1,0 +1,38 @@
+# File: configs/default.yaml
+environment:
+  grid_size: [15, 15]
+  max_agents: 4
+  max_resources: 8
+  max_steps: 1000
+  seed: 42
+
+rendering:
+  figsize: [10, 10]
+  agent_colors: ["red", "blue", "yellow", "purple", "green"]
+  resource_colors:
+    wood: "brown"
+    stone: "gray" 
+    food: "green"
+  save_animations: false
+  animation_fps: 2
+
+training:
+  batch_size: 64
+  buffer_size: 2048
+  learning_rate: 3e-4
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_ratio: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.01
+  max_grad_norm: 0.5
+  n_epochs: 4
+  n_parallel_envs: 8
+
+logging:
+  log_dir: "logs"
+  checkpoint_dir: "checkpoints"
+  log_interval: 100
+  save_interval: 1000
+  use_wandb: false
+  wandb_project: "nexus-agents"
