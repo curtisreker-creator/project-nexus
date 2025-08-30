@@ -1,0 +1,228 @@
+# File: configs/training.yaml
+# PPO Training Configuration for Project NEXUS
+
+# Environment Configuration
+environment:
+  grid_size: [15, 15]
+  max_agents: 1              # Start with single agent, scale to 4
+  max_resources: 8
+  max_steps: 1000
+  seed: 42
+
+# PPO Training Parameters
+training:
+  # Training Duration
+  total_steps: 500000         # Total environment steps to train
+  
+  # Core PPO Hyperparameters
+  learning_rate: 3e-4         # Adam optimizer learning rate
+  batch_size: 64              # Mini-batch size for updates
+  buffer_size: 2048           # Rollout buffer size
+  n_epochs: 4                 # PPO epochs per update
+  clip_ratio: 0.2             # PPO clipping parameter
+  
+  # Loss Function Coefficients
+  value_loss_coef: 0.5        # Value function loss coefficient
+  entropy_coef: 0.01          # Entropy bonus coefficient
+  max_grad_norm: 0.5          # Gradient clipping norm
+  
+  # Advantage Estimation
+  gamma: 0.99                 # Discount factor
+  gae_lambda: 0.95            # GAE lambda parameter
+  
+  # Logging and Checkpointing
+  log_interval: 100           # Steps between logging updates
+  save_interval: 10000        # Steps between checkpoint saves
+  eval_interval: 25000        # Steps between evaluations
+  eval_episodes: 10           # Episodes per evaluation
+  
+  # Learning Rate Scheduling
+  use_lr_scheduler: true
+  lr_scheduler_type: "linear" # linear, cosine, exponential
+  lr_decay_steps: 500000      # Steps for LR decay
+  min_lr_factor: 0.1          # Minimum LR as factor of initial
+
+# Network Architecture (references configs/network.yaml)
+network:
+  preset: "standard"          # lightweight, standard, advanced, performance
+  
+  # Override specific network parameters if needed
+  spatial_dim: 256
+  state_dim: 128
+  fusion_dim: 512
+  action_dim: 14
+  
+  # Advanced features
+  use_enhanced_cnn: false
+  use_attention_fusion: false
+  enable_communication: false
+
+# Multi-Agent Training (for future phases)
+multi_agent:
+  enabled: false              # Enable multi-agent training
+  shared_parameters: true     # Share network parameters between agents
+  communication_freq: 4       # Timesteps between communication
+  curriculum_learning: false  # Progressive multi-agent introduction
+
+# Distributed Training (for scaling)
+distributed:
+  enabled: false              # Enable distributed training
+  num_workers: 8              # Number of parallel environments
+  use_ray: false              # Use Ray for distributed training
+  
+# Curriculum Learning
+curriculum:
+  enabled: false              # Enable curriculum learning
+  initial_resources: 2        # Start with fewer resources
+  resource_increase_steps: 50000  # Steps between difficulty increases
+  max_resources: 8            # Maximum resources in curriculum
+  
+  initial_agents: 1           # Start with single agent
+  agent_increase_steps: 100000    # Steps to add agents
+  max_agents: 4               # Maximum agents in curriculum
+
+# Advanced Training Features
+advanced:
+  # Experience Replay
+  use_experience_replay: false
+  replay_buffer_size: 100000
+  
+  # Prioritized Experience Replay
+  use_prioritized_replay: false
+  priority_alpha: 0.6
+  priority_beta: 0.4
+  
+  # Behavioral Cloning Pre-training
+  pretrain_steps: 0           # Steps of BC pre-training
+  bc_learning_rate: 1e-3      # BC learning rate
+  
+  # Regularization
+  l2_regularization: 1e-5     # L2 weight decay
+  dropout_rate: 0.1           # Network dropout rate
+  
+  # Exploration
+  exploration_noise: 0.1      # Action noise for exploration
+  exploration_decay: 0.99     # Noise decay rate
+
+# Logging and Monitoring
+logging:
+  log_level: "INFO"           # DEBUG, INFO, WARNING, ERROR
+  log_dir: "logs"
+  
+  # Tensorboard logging
+  use_tensorboard: true
+  tensorboard_log_dir: "tensorboard_logs"
+  
+  # Weights & Biases integration
+  use_wandb: false
+  wandb_project: "project-nexus-ppo"
+  wandb_entity: null          # Your W&B username/team
+  wandb_tags: ["ppo", "multi-agent", "gridworld"]
+  
+  # Metrics to track
+  track_metrics:
+    - "mean_episode_reward"
+    - "episode_length"
+    - "policy_loss"
+    - "value_loss"
+    - "entropy"
+    - "kl_divergence"
+    - "clip_fraction"
+    - "explained_variance"
+
+# Checkpointing and Model Saving
+checkpointing:
+  checkpoint_dir: "checkpoints"
+  save_best_model: true       # Save model with best performance
+  save_frequency: "epoch"     # epoch, steps, time
+  max_checkpoints_to_keep: 5  # Limit disk usage
+  
+  # Model export for deployment
+  export_onnx: false          # Export ONNX model
+  export_torchscript: false   # Export TorchScript model
+
+# Evaluation Configuration
+evaluation:
+  eval_episodes: 10           # Episodes per evaluation run
+  eval_frequency: 25000       # Steps between evaluations
+  eval_deterministic: true    # Use deterministic policy for eval
+  eval_render: false          # Render evaluation episodes
+  eval_save_video: false      # Save evaluation videos
+  
+  # Evaluation metrics
+  track_eval_metrics:
+    - "mean_reward"
+    - "std_reward" 
+    - "min_reward"
+    - "max_reward"
+    - "mean_episode_length"
+    - "success_rate"           # Custom metric for task completion
+
+# Hardware and Performance
+hardware:
+  device: "auto"              # auto, cpu, cuda, mps
+  mixed_precision: false      # Use FP16 training
+  compile_model: false        # Use torch.compile (PyTorch 2.0+)
+  
+  # Memory optimization
+  gradient_checkpointing: false
+  pin_memory: true            # Pin memory for faster GPU transfer
+  num_workers: 4              # DataLoader workers
+
+# Debugging and Profiling  
+debug:
+  profile_training: false     # Profile training performance
+  check_gradients: false      # Monitor gradient norms
+  validate_inputs: true       # Validate network inputs
+  save_intermediate_outputs: false  # Save network activations
+  
+  # Early stopping for debugging
+  debug_max_steps: null       # Limit steps for debugging
+  debug_max_episodes: null    # Limit episodes for debugging
+
+# Experiment Tracking
+experiment:
+  name: "ppo_baseline"        # Experiment name
+  description: "Baseline PPO training for Project NEXUS"
+  tags: ["baseline", "single-agent", "ppo"]
+  
+  # Reproducibility
+  seed: 42                    # Global random seed
+  deterministic: false        # Fully deterministic training (slower)
+
+# Training Presets
+presets:
+  # Quick debugging preset
+  debug:
+    total_steps: 10000
+    buffer_size: 512
+    log_interval: 100
+    save_interval: 2000
+    eval_interval: 5000
+    
+  # Fast training preset
+  fast:
+    total_steps: 100000
+    buffer_size: 1024
+    learning_rate: 1e-3
+    batch_size: 128
+    
+  # Thorough training preset  
+  thorough:
+    total_steps: 2000000
+    buffer_size: 4096
+    learning_rate: 1e-4
+    batch_size: 32
+    n_epochs: 8
+    eval_interval: 50000
+    
+  # Multi-agent preset
+  multi_agent:
+    total_steps: 1000000
+    multi_agent:
+      enabled: true
+      shared_parameters: true
+    environment:
+      max_agents: 4
+    network:
+      enable_communication: true
