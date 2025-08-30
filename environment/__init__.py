@@ -24,6 +24,5 @@ def create_environment(config_path="configs/default.yaml", **kwargs):
         size=tuple(env_config['grid_size']),
         n_agents=env_config.get('max_agents', 1),
         max_resources=env_config['max_resources'],
-        max_steps=env_config['max_steps'],
-        seed=env_config.get('seed')
+        max_steps=env_config['max_steps']
     )

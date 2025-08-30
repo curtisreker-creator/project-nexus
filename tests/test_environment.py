@@ -11,7 +11,9 @@ class TestGridWorld:
     
     def test_environment_creation(self):
         """Test basic environment creation"""
-        env = GridWorld(size=(15, 15), n_agents=1, seed=42)
+        env = GridWorld(size=(15, 15), n_agents=1)
+        obs, info = env.reset(seed=42)
+        
         assert env.size == (15, 15)
         assert env.n_agents == 1
         assert len(env.agents) == 1
@@ -19,11 +21,11 @@ class TestGridWorld:
     
     def test_deterministic_seeding(self):
         """Test deterministic behavior with same seed"""
-        env1 = GridWorld(seed=42)
-        env2 = GridWorld(seed=42)
+        env1 = GridWorld()
+        env2 = GridWorld()
         
-        obs1 = env1.reset()
-        obs2 = env2.reset()
+        obs1, info1 = env1.reset(seed=42)
+        obs2, info2 = env2.reset(seed=42)
         
         np.testing.assert_array_equal(obs1, obs2)
         assert env1.agents[0]['pos'] == env2.agents[0]['pos']
@@ -31,14 +33,12 @@ class TestGridWorld:
     
     def test_observation_structure(self):
         """Test observation tensor structure"""
-        env = GridWorld(n_agents=2, seed=42)
-        obs = env.reset()
+        env = GridWorld(n_agents=2)
+        obs, info = env.reset(seed=42)
         
-        # Check shape
         assert obs.shape == (5, 15, 15)
         assert obs.dtype == np.float32
         
-        # Check channels have appropriate content
         assert obs[0].sum() > 0  # Empty spaces
         assert obs[2].sum() >= 2  # At least 2 agents visible
         
@@ -46,76 +46,75 @@ class TestGridWorld:
     
     def test_movement_mechanics(self):
         """Test agent movement in all directions"""
-        env = GridWorld(n_agents=1, seed=42)
-        obs = env.reset()
+        env = GridWorld(n_agents=1)
+        obs, info = env.reset(seed=42)
         
         initial_pos = env.agents[0]['pos']
         
-        # Test each movement direction
         for action in range(8):
-            env.reset(seed=42)  # Reset to same state
-            obs, reward, done, info = env.step([action])
+            env.reset(seed=42)
+            obs, reward, terminated, truncated, info = env.step(action)
             
-            # Agent should either move or stay in place (if blocked)
             current_pos = env.agents[0]['pos']
             distance = abs(current_pos[0] - initial_pos[0]) + abs(current_pos[1] - initial_pos[1])
-            assert distance <= 2  # Maximum distance for diagonal move
+            assert distance <= 2
         
         print("✅ Movement mechanics test passed")
     
     def test_resource_gathering(self):
         """Test resource gathering functionality"""
-        env = GridWorld(n_agents=1, seed=42)
-        obs = env.reset()
+        env = GridWorld(n_agents=1)
+        obs, info = env.reset(seed=42)
         
-        # Find a resource and move agent there
         if len(env.resources) > 0:
             resource_pos = env.resources[0]['pos']
             resource_type = env.resources[0]['type']
             initial_count = len(env.resources)
             
-            # Move agent to resource location
             env.agents[0]['pos'] = resource_pos
-            env.grid[resource_pos] = 1  # Agent ID
+            env.grid[resource_pos] = 1
             
-            # Try to gather
-            obs, reward, done, info = env.step([8])  # Gather action
+            obs, reward, terminated, truncated, info = env.step(8) # Gather action
             
-            # Check if resource was gathered
-            assert len(env.resources) <= initial_count
-            # Check inventory increased
+            assert len(env.resources) < initial_count
             assert env.agents[0]['inventory'][resource_type] > 0
+            assert reward > 0.0
             
         print("✅ Resource gathering test passed")
     
-    def test_multi_agent_coordination(self):
-        """Test multiple agents can act simultaneously"""
-        env = GridWorld(n_agents=3, seed=42)
-        obs = env.reset()
+    def test_multi_agent_initialization(self):
+        """Test multiple agents can be initialized"""
+        # TODO: Refactor this for a true multi-agent (PettingZoo) env in Phase 2.
+        env = GridWorld(n_agents=3)
+        obs, info = env.reset(seed=42)
+
+        assert env.n_agents == 3
+        assert len(info['agents']) == 3
+
+        initial_pos_agent0 = info['agents'][0]['pos']
+        obs, reward, terminated, truncated, info = env.step(0) # Move agent 0
+        new_pos_agent0 = info['agents'][0]['pos']
         
-        # Test multi-agent step
-        actions = [0, 1, 2]  # Different actions for each agent
-        obs, rewards, done, info = env.step(actions)
+        assert initial_pos_agent0 != new_pos_agent0
         
-        assert len(rewards) == 3
-        assert all(isinstance(r, (int, float)) for r in rewards)
-        
-        print("✅ Multi-agent coordination test passed")
+        print("✅ Multi-agent initialization test passed")
     
     def test_episode_termination(self):
         """Test episode termination conditions"""
-        env = GridWorld(n_agents=1, max_steps=5, seed=42)
-        obs = env.reset()
+        env = GridWorld(n_agents=1, max_steps=5)
+        obs, info = env.reset(seed=42)
         
-        # Run until termination
-        step_count = 0
         done = False
+        step_count = 0
+        truncated = False # Pre-initialize to fix 'possibly unbound' warning
+        
         while not done and step_count < 10:
-            obs, reward, done, info = env.step([0])
+            obs, reward, terminated, truncated, info = env.step(0)
+            done = terminated or truncated
             step_count += 1
         
-        # Should terminate within max_steps
-        assert step_count <= env.max_steps
+        assert truncated == True
+        assert step_count == env.max_steps
         print("✅ Episode termination test passed")
 
 def run_all_tests():
@@ -130,7 +129,7 @@ def run_all_tests():
     test.test_observation_structure()
     test.test_movement_mechanics()
     test.test_resource_gathering()
-    test.test_multi_agent_coordination()
+    test.test_multi_agent_initialization()
     test.test_episode_termination()
     
     print("=" * 50)
