@@ -47,6 +47,7 @@ This section provides a high-level overview of the technical design of Project N
 
 Project NEXUS is organized into eight distinct but interconnected subsystems to manage complexity and focus development. The graph below shows how these subsystems interact.
 
+```mermaid
 ---
 config:
   theme: neo-dark
@@ -75,3 +76,4 @@ flowchart LR
     RIL -- Generates Findings --> DRM
     AIE -- Provides Analytics --> DRM
     RIL -- Produces Models --> MPE
+```
