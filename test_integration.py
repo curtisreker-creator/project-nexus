@@ -14,7 +14,7 @@ import warnings
 project_root = Path(__file__).parent
 sys.path.append(str(project_root))
 
-# FIX 1: Move essential imports to the global scope
+# FIX: Move essential imports to the global scope
 from environment.grid_world import GridWorld
 
 def test_imports():
@@ -58,8 +58,8 @@ def test_imports():
     
     try:
         # Agent package imports
-        from agents import get_agent_info
-        agent_info = get_agent_info()
+        # FIX: Remove invalid import and use a valid check for agents package
+        import agents
         print("✅ Agents package imports successful")
         import_results['agents'] = True
         
@@ -189,10 +189,14 @@ def test_end_to_end_pipeline():
         
         network.eval()
         
-        # Convert environment data to network inputs
-        obs_tensor = torch.from_numpy(obs).unsqueeze(0).float()
+        # FIX: Determine the network's device and move tensors to it
+        device = next(network.parameters()).device
+        print(f"   Network is on device: {device}")
+
+        # Convert environment data to network inputs and move to the correct device
+        obs_tensor = torch.from_numpy(obs).unsqueeze(0).float().to(device)
         
-        # FIX 2: Initialize variable to None before the try block
+        # Try to prepare agent states
         prepare_agent_state_batch = None
         agent_states = None
         try:
@@ -220,9 +224,12 @@ def test_end_to_end_pipeline():
             agent_states = torch.tensor([agent_state], dtype=torch.float32)
             print(f"✅ Agent states manually prepared: {agent_states.shape}")
         
+        # FIX: Move agent_states tensor to the correct device
+        agent_states = agent_states.to(device)
+
         print(f"✅ Data conversion successful")
-        print(f"   Obs tensor: {obs_tensor.shape}")
-        print(f"   Agent states: {agent_states.shape}")
+        print(f"   Obs tensor: {obs_tensor.shape} on {obs_tensor.device}")
+        print(f"   Agent states: {agent_states.shape} on {agent_states.device}")
         
         # Network inference
         with torch.no_grad():
@@ -254,15 +261,15 @@ def test_end_to_end_pipeline():
         step_count = 0
         total_reward = 0.0
         
-        while step_count < 5 and not (terminated or truncated):  # Reduced steps
+        while step_count < 5 and not (terminated or truncated):
             try:
-                # Update observations
-                obs_tensor = torch.from_numpy(next_obs).unsqueeze(0).float()
+                # FIX: Update observations and move to the correct device
+                obs_tensor = torch.from_numpy(next_obs).unsqueeze(0).float().to(device)
                 
                 # Update agent states
                 if prepare_agent_state_batch is not None:
                     try:
-                        agent_states = prepare_agent_state_batch(next_info['agents'])
+                        agent_states = prepare_agent_state_batch(next_info['agents']).to(device)
                     except Exception:
                         # Manual fallback
                         agent_dict = next_info['agents'][0]
@@ -277,14 +284,14 @@ def test_end_to_end_pipeline():
                             float(agent_dict['pos'][0]) / 15.0,
                             float(agent_dict['pos'][1]) / 15.0
                         ]
-                        agent_states = torch.tensor([agent_state], dtype=torch.float32)
+                        agent_states = torch.tensor([agent_state], dtype=torch.float32).to(device)
                 
                 # Get next action
                 with torch.no_grad():
                     try:
-                        actions, log_probs, values = network.act(obs_tensor, agent_states)
+                        actions, _, _ = network.act(obs_tensor, agent_states)
                     except Exception:
-                        action_logits, state_values = network(obs_tensor, agent_states)
+                        action_logits, _ = network(obs_tensor, agent_states)
                         actions = torch.argmax(action_logits, dim=1)
                 
                 # Execute action
@@ -356,7 +363,7 @@ def test_device_compatibility():
             print(f"\n   Testing on {device}...")
             
             try:
-                network = PPOActorCritic(spatial_dim=64, fusion_dim=128).to(device)  # Small network
+                network = PPOActorCritic(spatial_dim=64, fusion_dim=128).to(device)
                 
                 # Create test data on same device
                 obs = torch.randn(1, 5, 15, 15, device=device)
@@ -452,14 +459,14 @@ def run_all_tests():
     
     print(f"\n🎯 OVERALL RESULT: {passed_tests}/{total_tests} tests passed")
     
-    if passed_tests >= total_tests * 0.7:  # 70% pass rate
+    if passed_tests == total_tests:
+        print("\n✅ INTEGRATION SUCCESSFUL!")
+        print("✅ All tests passed - system fully operational")
+        print("\n🚀 System ready for Phase 3!")
+    elif passed_tests >= total_tests * 0.7:
         print("\n✅ INTEGRATION MOSTLY SUCCESSFUL!")
         print("✅ Core components are functional")
-        print("✅ Basic pipeline operational")
-        if passed_tests == total_tests:
-            print("✅ All tests passed - system fully operational")
-        else:
-            print("⚠️  Some advanced features may be limited")
+        print("⚠️  Some advanced features may be limited")
         print("\n🚀 System ready for Phase 3 with current components!")
     else:
         print(f"\n⚠️  PARTIAL SUCCESS: {total_tests - passed_tests} test(s) failed")
