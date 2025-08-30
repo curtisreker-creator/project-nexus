@@ -1,3 +1,6 @@
+
+Markdown
+
 # Welcome to the Project NEXUS Community Wiki!
 
 **Project NEXUS is an open-source, end-to-end research platform for Multi-Agent Reinforcement Learning (MARL), designed to explore the frontiers of emergent coordination and communication.**
@@ -50,7 +53,7 @@ Project NEXUS is organized into eight distinct but interconnected subsystems to 
 ```mermaid
 ---
 config:
-  theme: neo-dark
+  theme: dark
 ---
 flowchart LR
  subgraph subGraph0["Foundational Subsystems"]
@@ -76,8 +79,6 @@ flowchart LR
     RIL -- Generates Findings --> DRM
     AIE -- Provides Analytics --> DRM
     RIL -- Produces Models --> MPE
-```
-
 The Agent Architecture
 The core of the project is the NEXUS agent. Its "mind" is a neural network that processes information from multiple sources simultaneously (multi-modal fusion):
 
@@ -105,7 +106,7 @@ Open your terminal, navigate to your desired directory, and clone the repository
 
 Bash
 
-git clone https://github.com/curtisreker-creator/project-nexus.git
+git clone [https://github.com/curtisreker-creator/project-nexus.git](https://github.com/curtisreker-creator/project-nexus.git)
 cd project-nexus
 2. Set Up the Conda Environment
 Use the provided environment file to create a new, isolated Conda environment.
