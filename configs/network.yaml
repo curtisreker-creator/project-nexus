@@ -1,0 +1,151 @@
+# File: configs/network.yaml
+# Neural Network Configuration for Project NEXUS
+
+network:
+  # Spatial CNN Configuration
+  spatial_channels: 5        # Input channels: empty, resources, agents, buildings, activity
+  spatial_dim: 256          # Spatial feature dimension
+  use_enhanced_cnn: false   # Use enhanced CNN with attention
+  
+  # Multi-Modal Fusion Configuration
+  state_dim: 128            # Agent state encoding dimension
+  fusion_dim: 512           # Final fused feature dimension
+  use_attention_fusion: false # Use attentional fusion mechanism
+  
+  # Policy-Value Network Configuration
+  action_dim: 14            # Number of discrete actions
+  policy_hidden_dim: 256    # Policy head hidden layer size
+  value_hidden_dim: 256     # Value head hidden layer size
+  
+  # Communication Module (for multi-agent coordination)
+  enable_communication: false # Enable agent communication
+  comm_vocab_size: 16         # Communication vocabulary size
+  max_agents: 4               # Maximum number of agents
+  
+  # Advanced Features
+  use_layer_norm: true      # Use layer normalization
+  dropout_rate: 0.1         # Dropout probability
+  activation: "relu"        # Activation function: relu, gelu, swish
+  
+  # Weight Initialization
+  init_method: "orthogonal" # Weight initialization: orthogonal, xavier, kaiming
+  policy_init_gain: 0.01    # Policy head initialization gain (for stability)
+  value_init_gain: 1.0      # Value head initialization gain
+
+# Model Architecture Presets
+presets:
+  # Lightweight configuration for fast experimentation
+  lightweight:
+    spatial_dim: 128
+    state_dim: 64
+    fusion_dim: 256
+    policy_hidden_dim: 128
+    value_hidden_dim: 128
+    use_enhanced_cnn: false
+    use_attention_fusion: false
+    enable_communication: false
+  
+  # Standard configuration for main training
+  standard:
+    spatial_dim: 256
+    state_dim: 128
+    fusion_dim: 512
+    policy_hidden_dim: 256
+    value_hidden_dim: 256
+    use_enhanced_cnn: false
+    use_attention_fusion: false
+    enable_communication: false
+  
+  # Advanced configuration with all features
+  advanced:
+    spatial_dim: 384
+    state_dim: 192
+    fusion_dim: 768
+    policy_hidden_dim: 384
+    value_hidden_dim: 384
+    use_enhanced_cnn: true
+    use_attention_fusion: true
+    enable_communication: true
+    dropout_rate: 0.15
+  
+  # High-performance configuration for final training
+  performance:
+    spatial_dim: 512
+    state_dim: 256
+    fusion_dim: 1024
+    policy_hidden_dim: 512
+    value_hidden_dim: 512
+    use_enhanced_cnn: true
+    use_attention_fusion: true
+    enable_communication: true
+    dropout_rate: 0.2
+
+# Device and Performance Settings
+device:
+  # Device selection: auto, cpu, cuda, mps
+  type: "auto"              # Auto-detect best available device
+  
+  # Memory optimization
+  use_mixed_precision: false # Enable mixed precision training (fp16)
+  gradient_checkpointing: false # Enable gradient checkpointing to save memory
+  
+  # Compilation (PyTorch 2.0+)
+  compile_model: false      # Use torch.compile for optimization
+  compile_mode: "default"   # Compilation mode: default, reduce-overhead, max-autotune
+
+# Model Export and Deployment
+export:
+  # ONNX export settings
+  enable_onnx_export: false
+  onnx_opset_version: 11
+  
+  # TorchScript export
+  enable_torchscript: false
+  
+  # Quantization for deployment
+  enable_quantization: false
+  quantization_method: "dynamic" # dynamic, static, qat
+
+# Debugging and Analysis
+debug:
+  # Enable gradient monitoring
+  monitor_gradients: false
+  
+  # Enable activation monitoring  
+  monitor_activations: false
+  
+  # Save feature maps for visualization
+  save_feature_maps: false
+  feature_map_interval: 1000
+  
+  # Network analysis
+  analyze_network_complexity: false
+  profile_forward_pass: false
+
+# Hyperparameter Search Ranges (for automated tuning)
+hyperparameter_search:
+  spatial_dim: [128, 256, 384, 512]
+  state_dim: [64, 128, 192, 256] 
+  fusion_dim: [256, 512, 768, 1024]
+  policy_hidden_dim: [128, 256, 384, 512]
+  value_hidden_dim: [128, 256, 384, 512]
+  dropout_rate: [0.0, 0.05, 0.1, 0.15, 0.2]
+  policy_init_gain: [0.005, 0.01, 0.02, 0.05]
+
+# Network Validation Settings
+validation:
+  # Input validation
+  check_input_shapes: true
+  check_input_ranges: true
+  
+  # Output validation
+  check_output_shapes: true
+  check_nan_inf: true
+  
+  # Gradient validation
+  check_gradient_flow: true
+  gradient_clip_value: 0.5
+  
+  # Performance validation
+  benchmark_forward_pass: false
+  benchmark_backward_pass: false
