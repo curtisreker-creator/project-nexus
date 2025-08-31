@@ -491,7 +491,7 @@ class NEXUSVisualizerFixed:
             if reward > 0.5:  # Good reward (resource gathered)
                 self._add_effect("gather", agent.pos, Colors.RESOURCE_GLOW)
             elif len(agent.coordination_partners) > 0:  # Coordination
-                self._add_effect("coordinate", agent.pos, Colors.COORDINATION_EFFECT)
+                self._add_effect("coordinate", agent.pos, Colors.COORDINATION_EFFECT[:3])
     
     def _add_effect(self, effect_type: str, pos: Tuple[int, int], color: Tuple[int, int, int]):
         """Add visual effect"""
