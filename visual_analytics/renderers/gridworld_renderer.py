@@ -130,10 +130,10 @@ class GridWorldRenderer:
                 # Default positions for demo
                 step = env_state.get('step', 0)
                 agent_positions = [
-                    (1 + step % 5, 1 + step % 5),
-                    (2 + step % 5, 2 + step % 5),
-                    (13 - step % 5, 13 - step % 5),
-                    (12 - step % 5, 12 - step % 5)
+                    (1 + (step // 20) % 5, 1 + (step // 20) % 5),
+                    (2 + (step // 20) % 5, 2 + (step // 20) % 5),
+                    (13 - (step // 20) % 5, 13 - (step // 20) % 5),
+                    (12 - (step // 20) % 5, 12 - (step // 20) % 5)
                 ]
                 agent_teams = ['team_a', 'team_a', 'team_b', 'team_b']
 
@@ -303,7 +303,7 @@ class GridWorldRenderer:
                 pygame.draw.circle(self.screen, (255, 255, 255), (pixel_x, pixel_y), 8, 2)
 
                 # Agent ID
-                font = pygame.font.Font(None, 16)
+                font = pygame.font.SysFont('sans-serif', 16)  # FONT FIX
                 text = font.render(str(i), True, (255, 255, 255))
                 text_rect = text.get_rect(center=(pixel_x, pixel_y))
                 self.screen.blit(text, text_rect)
@@ -316,8 +316,8 @@ class GridWorldRenderer:
             return
 
         try:
-            font = pygame.font.Font(None, 24)
-            small_font = pygame.font.Font(None, 18)
+            font = pygame.font.SysFont('sans-serif', 24)  # FONT FIX
+            small_font = pygame.font.SysFont('sans-serif', 18)  # FONT FIX
 
             # Scores
             y_offset = 10
@@ -355,12 +355,12 @@ class GridWorldRenderer:
             return
 
         try:
-            font = pygame.font.Font(None, 48)
+            font = pygame.font.SysFont('sans-serif', 48, bold=True)  # FONT FIX
             text = font.render("NEXUS Self-Play Training", True, (255, 255, 255))
             text_rect = text.get_rect(center=(self.config.window_width // 2, self.config.window_height // 2))
             self.screen.blit(text, text_rect)
 
-            small_font = pygame.font.Font(None, 24)
+            small_font = pygame.font.SysFont('sans-serif', 24)  # FONT FIX
             waiting_text = small_font.render("Waiting for training data...", True, (200, 200, 200))
             waiting_rect = waiting_text.get_rect(
                 center=(self.config.window_width // 2, self.config.window_height // 2 + 50))
@@ -406,13 +406,11 @@ async def demo_renderer():
     renderer = create_single_match_renderer()
     renderer.start_rendering()
 
-    # Simulate match states
+    step = 0
     try:
-        for step in range(1000):
-            # Check if rendering should continue
-            if not renderer.running:
-                break
-
+        # Main simulation loop: continues as long as the renderer is running
+        # (i.e., until you close the Pygame window).
+        while renderer.running:
             dummy_state = {
                 'team_a_score': step * 0.15,
                 'team_b_score': step * 0.12,
@@ -421,11 +419,13 @@ async def demo_renderer():
             }
 
             renderer.update_state(dummy_state)
+            step += 1
             await asyncio.sleep(0.016)  # ~60 FPS update rate
 
     except KeyboardInterrupt:
         print("\nKeyboard interrupt received.")
     finally:
+        # This part is now only called after you close the window or press Ctrl+C
         renderer.stop_rendering()
         print("🎬 Demo complete!")
 
